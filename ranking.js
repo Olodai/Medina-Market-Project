@@ -8,6 +8,15 @@ function loadSendersFromLocalStorage() {
   return storedSenders ? JSON.parse(storedSenders) : null;
 }
 
+function saveItemsToLocalStorage() {
+  localStorage.setItem('medinaItems', JSON.stringify(ITEMS));
+}
+
+function loadItemsFromLocalStorage() {
+  const storedItems = localStorage.getItem('medinaItems');
+  return storedItems ? JSON.parse(storedItems) : null;
+}
+
 // ─── STATE ────────────────────────────────────────────────────────────────────
 const ME = {
   offers: ['books','seedlings','bread','sourdough','plants'],
@@ -67,7 +76,7 @@ const defaultSenders = [ // Renamed original senders to defaultSenders
 
 let senders = loadSendersFromLocalStorage() || defaultSenders; // Load from local storage or use default
 
-const ITEMS = [
+const defaultItems = [
   {emoji:'🪴',bg:'#E8F0EB',title:'Monstera Deliciosa (large)',seek:'Cookbooks or spice sets',user:'Fatima K.',uc:'#C1522A',req:false},
   {emoji:'📷',bg:'#F5E6DC',title:'Vintage Pentax camera',seek:'Cycling gear or tools',user:'James O.',uc:'#3D6B4F',req:false},
   {emoji:'🎸',bg:'#F2EAD8',title:'Acoustic guitar + case',seek:'Language lessons or art supplies',user:'Priya S.',uc:'#7F77DD',req:false},
@@ -77,6 +86,8 @@ const ITEMS = [
   {emoji:'🧵',bg:'#FBF0F4',title:'Singer sewing machine',seek:'Bicycle or fitness gear',user:'Nour H.',uc:'#993556',req:false},
   {emoji:'🎨',bg:'#FAEEDA',title:'Watercolour art set',seek:'Guitar or music lessons',user:'Lucia P.',uc:'#7F77DD',req:true},
 ];
+
+let ITEMS = loadItemsFromLocalStorage() || [...defaultItems];
 
 let curSender = senders[0];
 let modalType = 'trade';
@@ -294,29 +305,29 @@ function go(page){
   const nb=document.getElementById('nb-'+page);
   if(nb) nb.classList.add('on');
   if(page==='messages') renderInbox();
-  if(page==='profile')  updateProfile();
-}
-
-
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
-function renderGrid(itemsToDisplay = ITEMS){
-  const items = itemsToDisplay;
-  document.getElementById('igrid').innerHTML=items.map((it,i)=>`
-    <div class="icard" onclick="openModal(${i})">
-      <div class="icard-img" style="background:${it.bg}">
-        <span>${it.emoji}</span>
-        <div class="ibadge${it.req?' req':''}">${it.req?'Request':'Exchange'}</div>
-      </div>
-      <div class="icard-body">
-        <div class="icard-title">${it.title}</div>
-        <div class="icard-seek">Seeking: <strong>${it.seek}</strong></div>
-        <div class="icard-foot">
-          <div class="icard-user"><div class="av" style="background:${it.uc}">${it.user.split(' ').map(n=>n[0]).join('')}</div>${it.user}</div>
-          <button class="hbtn" onclick="event.stopPropagation();this.classList.toggle('on');this.textContent=this.classList.contains('on')?'♥':'♡'">♡</button>
+    if(page==='profile')  updateProfile();
+  }
+  
+  
+  // ─── HELPERS ──────────────────────────────────────────────────────────────────
+  function renderGrid(itemsToDisplay = ITEMS){
+    const items = itemsToDisplay;
+    document.getElementById('igrid').innerHTML=items.map((it,i)=>`
+      <div class="icard" onclick="openModal(${i})">
+        <div class="icard-img" style="background:${it.bg}; ${it.image ? 'padding: 0;' : ''}">
+          ${it.image ? `<img src="${it.image}" alt="${it.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--rl);">` : `<span>${it.emoji}</span>`}
+          <div class="ibadge${it.req?' req':''} ">${it.req?'Request':'Exchange'}</div>
         </div>
-      </div>
-    </div>`).join('');
-}
+        <div class="icard-body">
+          <div class="icard-title">${it.title}</div>
+          <div class="icard-seek">Seeking: <strong>${it.seek}</strong></div>
+          <div class="icard-foot">
+            <div class="icard-user"><div class="av" style="background:${it.uc}">${it.user.split(' ').map(n=>n[0]).join('')}</div>${it.user}</div>
+            <button class="hbtn" onclick="event.stopPropagation();this.classList.toggle('on');this.textContent=this.classList.contains('on')?'♥':'♡'">♡</button>
+          </div>
+        </div>
+      </div>`).join('');
+  }
 
 function sendMsg(){
   const inp=document.getElementById('chat-inp');
@@ -369,9 +380,11 @@ function postItem(){
       seek: itemSeek,
       user: 'Sara R.', // Assuming 'Sara R.' is the current user posting
       uc: '#C1522A', // User color for Sara R.
-      req: false // Default to not a request
+      req: false, // Default to not a request
+      image: currentImages.length > 0 ? currentImages[0] : null // Add the first uploaded image
     };
     ITEMS.unshift(newItem); // Add to the beginning of the array
+    saveItemsToLocalStorage(); // Save updated ITEMS array to local storage
     renderGrid(); // Re-render the grid to show the new item
     toast('Item listed! Your exchange is live ✓');
     setTimeout(()=>go('home'),1200);
@@ -379,6 +392,8 @@ function postItem(){
     document.getElementById('post-item-name').value = '';
     document.getElementById('post-item-description').value = '';
     document.getElementById('post-item-seek').value = '';
+    document.getElementById('photo-previews').innerHTML = ''; // Clear photo previews
+    currentImages = []; // Clear current images array
     // Reset category selection to default (first one)
     document.querySelectorAll('#post-item-category .co').forEach((el, index) => {
         if (index === 0) {
@@ -399,58 +414,4 @@ function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg
 renderGrid();
 updateProfile();
 
-function performSearch() {
-  const searchTerm = document.getElementById('srch-inp').value.toLowerCase();
-  const filteredItems = ITEMS.filter(item => item.title.toLowerCase().includes(searchTerm));
-  renderGrid(filteredItems);
-}
 
-// Add event listener to the search button
-document.querySelector('.srch-go').addEventListener('click', performSearch);
-
-// Add event listener for 'Enter' key press on the search input
-document.getElementById('srch-inp').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        performSearch();
-    }
-});
-
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
-function renderGrid(itemsToDisplay = ITEMS){
-  const items = itemsToDisplay;
-  document.getElementById('igrid').innerHTML=items.map((it,i)=>`
-    <div class="icard" onclick="openModal(${i})">
-      <div class="icard-img" style="background:${it.bg}">
-        <span>${it.emoji}</span>
-        <div class="ibadge${it.req?' req':''}">${it.req?'Request':'Exchange'}</div>
-      </div>
-      <div class="icard-body">
-        <div class="icard-title">${it.title}</div>
-        <div class="icard-seek">Seeking: <strong>${it.seek}</strong></div>
-        <div class="icard-foot">
-          <div class="icard-user"><div class="av" style="background:${it.uc}">${it.user.split(' ').map(n=>n[0]).join('')}</div>${it.user}</div>
-          <button class="hbtn" onclick="event.stopPropagation();this.classList.toggle('on');this.textContent=this.classList.contains('on')?'♥':'♡'">♡</button>
-        </div>
-      </div>
-    </div>`).join('');
-}
-
-function performSearch() {
-  const searchTerm = document.getElementById('srch-inp').value.toLowerCase();
-  const filteredItems = ITEMS.filter(item => item.title.toLowerCase().includes(searchTerm));
-  renderGrid(filteredItems);
-}
-
-// Add event listener to the search button
-document.querySelector('.srch-go').addEventListener('click', performSearch);
-
-// Add event listener for 'Enter' key press on the search input
-document.getElementById('srch-inp').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        performSearch();
-    }
-});
-
-// Initial render of the grid when the page loads
-renderGrid();
-updateProfile();

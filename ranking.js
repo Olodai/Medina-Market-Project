@@ -1,3 +1,13 @@
+// Helper functions for localStorage persistence
+function saveSendersToLocalStorage() {
+  localStorage.setItem('medinaSenders', JSON.stringify(senders));
+}
+
+function loadSendersFromLocalStorage() {
+  const storedSenders = localStorage.getItem('medinaSenders');
+  return storedSenders ? JSON.parse(storedSenders) : null;
+}
+
 // ─── STATE ────────────────────────────────────────────────────────────────────
 const ME = {
   offers: ['books','seedlings','bread','sourdough','plants'],
@@ -11,7 +21,7 @@ let creditLog = [
   {delta:+1, desc:'Trade completed → James (seeds ↔ camera strap)', date:'3 weeks ago'},
 ];
 
-const senders = [
+const defaultSenders = [ // Renamed original senders to defaultSenders
   {id:'aisha', name:'Aisha M.',  init:'AM', col:'#C1522A', credit:12,
    offers:['lamp','rattan','home decor'], seeks:['candles','plants','seedlings'],
    item:'Rattan lamp ↔ Candles',
@@ -55,6 +65,8 @@ const senders = [
    ]},
 ];
 
+let senders = loadSendersFromLocalStorage() || defaultSenders; // Load from local storage or use default
+
 const ITEMS = [
   {emoji:'🪴',bg:'#E8F0EB',title:'Monstera Deliciosa (large)',seek:'Cookbooks or spice sets',user:'Fatima K.',uc:'#C1522A',req:false},
   {emoji:'📷',bg:'#F5E6DC',title:'Vintage Pentax camera',seek:'Cycling gear or tools',user:'James O.',uc:'#3D6B4F',req:false},
@@ -69,6 +81,49 @@ const ITEMS = [
 let curSender = senders[0];
 let modalType = 'trade';
 let modalItem = null;
+
+let currentImages = []; // Global variable to store selected images Base64 strings
+
+document.addEventListener('DOMContentLoaded', () => {
+  const upboxTrigger = document.getElementById('upbox-trigger');
+  const postItemPhotosInput = document.getElementById('post-item-photos');
+  const photoPreviews = document.getElementById('photo-previews');
+
+  if (upboxTrigger && postItemPhotosInput) {
+    upboxTrigger.addEventListener('click', () => {
+      postItemPhotosInput.click();
+    });
+  }
+
+  if (postItemPhotosInput && photoPreviews) {
+    postItemPhotosInput.addEventListener('change', (event) => {
+      photoPreviews.innerHTML = ''; // Clear previous previews
+      currentImages = []; // Clear previous images
+
+      const files = event.target.files;
+      if (files.length > 0) {
+        for (let i = 0; i < Math.min(files.length, 6); i++) { // Limit to 6 files
+          const file = files[i];
+          if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              currentImages.push(reader.result); // Store Base64 string
+              const img = document.createElement('img');
+              img.src = reader.result;
+              img.style.maxWidth = '100px';
+              img.style.maxHeight = '100px';
+              img.style.objectFit = 'cover';
+              img.style.borderRadius = '8px';
+              photoPreviews.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+          }
+        }
+      }
+    });
+  }
+});
+
 
 // ─── PRIORITY QUEUE ───────────────────────────────────────────────────────────
 function isMutual(s) {
@@ -173,6 +228,7 @@ function acceptTrade(sid) {
   s.msgs = s.msgs.filter(m=>!m.card);
   s.msgs.push({me:true, txt:'Trade accepted! Looking forward to the exchange.', t:'Just now'});
   toast(`Trade confirmed! You and ${s.name} each earned +1 credit.`);
+  saveSendersToLocalStorage(); // Save changes to local storage
   renderInbox();
   updateProfile();
 }
@@ -241,9 +297,11 @@ function go(page){
   if(page==='profile')  updateProfile();
 }
 
+
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
-function renderGrid(){
-  document.getElementById('igrid').innerHTML=ITEMS.map((it,i)=>`
+function renderGrid(itemsToDisplay = ITEMS){
+  const items = itemsToDisplay;
+  document.getElementById('igrid').innerHTML=items.map((it,i)=>`
     <div class="icard" onclick="openModal(${i})">
       <div class="icard-img" style="background:${it.bg}">
         <span>${it.emoji}</span>
@@ -267,14 +325,132 @@ function sendMsg(){
   curSender.msgs.push({me:true,txt,t:'Just now'});
   inp.value='';
   renderChat();
+  saveSendersToLocalStorage(); // Save messages to local storage
 }
 
 function setChip(el){ document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
 function setCat(el){ el.closest('.cg').querySelectorAll('.co').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
-function postItem(){ toast('Item listed! Your exchange is live ✓'); setTimeout(()=>go('home'),1200); }
+function postItem(){
+  const itemName = document.getElementById('post-item-name').value;
+  const itemDescription = document.getElementById('post-item-description').value; // Get description
+  const itemSeek = document.getElementById('post-item-seek').value;
+  const selectedCategoryElement = document.querySelector('#post-item-category .co.on');
+  let emoji = '📦'; // Default emoji
+  let bg = '#E6EEF8'; // Default background color
+
+  if (selectedCategoryElement) {
+    const categoryText = selectedCategoryElement.textContent.trim();
+    if (categoryText.includes('Books')) {
+      emoji = '📚';
+      bg = '#E6EEF8';
+    } else if (categoryText.includes('Tools')) {
+      emoji = '🛠️';
+      bg = '#EAF3DE';
+    } else if (categoryText.includes('Garden')) {
+      emoji = '🌿';
+      bg = '#E8F0EB';
+    } else if (categoryText.includes('Clothing')) {
+      emoji = '👗';
+      bg = '#FBF0F4';
+    } else if (categoryText.includes('Kitchen')) {
+      emoji = '🍳';
+      bg = '#FAEEDA';
+    } else if (categoryText.includes('Skills')) {
+      emoji = '✨';
+      bg = '#F2EAD8';
+    }
+  }
+
+  if (itemName && itemSeek) {
+    const newItem = {
+      emoji: emoji,
+      bg: bg,
+      title: itemName,
+      seek: itemSeek,
+      user: 'Sara R.', // Assuming 'Sara R.' is the current user posting
+      uc: '#C1522A', // User color for Sara R.
+      req: false // Default to not a request
+    };
+    ITEMS.unshift(newItem); // Add to the beginning of the array
+    renderGrid(); // Re-render the grid to show the new item
+    toast('Item listed! Your exchange is live ✓');
+    setTimeout(()=>go('home'),1200);
+    // Clear the form fields after posting
+    document.getElementById('post-item-name').value = '';
+    document.getElementById('post-item-description').value = '';
+    document.getElementById('post-item-seek').value = '';
+    // Reset category selection to default (first one)
+    document.querySelectorAll('#post-item-category .co').forEach((el, index) => {
+        if (index === 0) {
+            el.classList.add('on');
+        } else {
+            el.classList.remove('on');
+        }
+    });
+
+  } else {
+    toast('Please fill in both item name and what you are looking for.');
+  }
+}
 
 let _tt;
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),3200); }
 
+renderGrid();
+updateProfile();
+
+function performSearch() {
+  const searchTerm = document.getElementById('srch-inp').value.toLowerCase();
+  const filteredItems = ITEMS.filter(item => item.title.toLowerCase().includes(searchTerm));
+  renderGrid(filteredItems);
+}
+
+// Add event listener to the search button
+document.querySelector('.srch-go').addEventListener('click', performSearch);
+
+// Add event listener for 'Enter' key press on the search input
+document.getElementById('srch-inp').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        performSearch();
+    }
+});
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function renderGrid(itemsToDisplay = ITEMS){
+  const items = itemsToDisplay;
+  document.getElementById('igrid').innerHTML=items.map((it,i)=>`
+    <div class="icard" onclick="openModal(${i})">
+      <div class="icard-img" style="background:${it.bg}">
+        <span>${it.emoji}</span>
+        <div class="ibadge${it.req?' req':''}">${it.req?'Request':'Exchange'}</div>
+      </div>
+      <div class="icard-body">
+        <div class="icard-title">${it.title}</div>
+        <div class="icard-seek">Seeking: <strong>${it.seek}</strong></div>
+        <div class="icard-foot">
+          <div class="icard-user"><div class="av" style="background:${it.uc}">${it.user.split(' ').map(n=>n[0]).join('')}</div>${it.user}</div>
+          <button class="hbtn" onclick="event.stopPropagation();this.classList.toggle('on');this.textContent=this.classList.contains('on')?'♥':'♡'">♡</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function performSearch() {
+  const searchTerm = document.getElementById('srch-inp').value.toLowerCase();
+  const filteredItems = ITEMS.filter(item => item.title.toLowerCase().includes(searchTerm));
+  renderGrid(filteredItems);
+}
+
+// Add event listener to the search button
+document.querySelector('.srch-go').addEventListener('click', performSearch);
+
+// Add event listener for 'Enter' key press on the search input
+document.getElementById('srch-inp').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        performSearch();
+    }
+});
+
+// Initial render of the grid when the page loads
 renderGrid();
 updateProfile();

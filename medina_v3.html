@@ -307,13 +307,19 @@ nav{background:var(--white);border-bottom:1px solid var(--sand-dark);padding:0 1
 <div class="page" id="page-post">
   <div class="fpage">
     <div class="fhdr"><h2>List an Item</h2><p>Share something you have — let the community trade with you.</p></div>
-    <div class="fg2"><label>Item name</label><input type="text" placeholder="e.g. Vintage camera, sourdough starter, yoga mat..."></div>
-    <div class="fg2"><label>Description</label><textarea placeholder="Condition, age, any quirks worth mentioning..."></textarea></div>
+    <div class="fg2"><label>Item name</label><input type="text" id="post-item-name" placeholder="e.g. Vintage camera, sourdough starter, yoga mat..."></div>
+    <div class="fg2"><label>Description</label><textarea id="post-item-description" placeholder="Condition, age, any quirks worth mentioning..."></textarea></div>
     <div class="fg2"><label>Photos</label>
-      <div class="upbox"><div style="font-size:1.75rem;margin-bottom:.6rem">📷</div><p style="font-size:.85rem;color:var(--ink-light)">Drag photos here or click to upload</p><p style="font-size:.72rem;margin-top:.3rem;color:var(--sand-deep)">Up to 6 · JPG, PNG</p></div>
+      <div class="upbox" id="upbox-trigger">
+        <input type="file" id="post-item-photos" accept="image/jpeg, image/png" multiple style="display:none;">
+        <div style="font-size:1.75rem;margin-bottom:.6rem">📷</div>
+        <p style="font-size:.85rem;color:var(--ink-light)">Drag photos here or click to upload</p>
+        <p style="font-size:.72rem;margin-top:.3rem;color:var(--sand-deep)">Up to 6 · JPG, PNG</p>
+      </div>
+      <div id="photo-previews" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;"></div>
     </div>
     <div class="fg2"><label>Category</label>
-      <div class="cg">
+      <div class="cg" id="post-item-category">
         <div class="co on" onclick="setCat(this)"><span class="co-icon">📚</span>Books & Media</div>
         <div class="co" onclick="setCat(this)"><span class="co-icon">🛠️</span>Tools & DIY</div>
         <div class="co" onclick="setCat(this)"><span class="co-icon">🌿</span>Garden</div>
@@ -322,7 +328,7 @@ nav{background:var(--white);border-bottom:1px solid var(--sand-dark);padding:0 1
         <div class="co" onclick="setCat(this)"><span class="co-icon">✨</span>Skills</div>
       </div>
     </div>
-    <div class="fg2"><label>What are you looking for in exchange?</label><input type="text" placeholder="e.g. Homemade food, children's books, gardening help..."></div>
+    <div class="fg2"><label>What are you looking for in exchange?</label><input type="text" id="post-item-seek" placeholder="e.g. Homemade food, children's books, gardening help..."></div>
     <div class="fg2 tcol">
       <div><label>Your area</label><input type="text" placeholder="Brixton, London"></div>
       <div><label>Availability</label><select><option>Anytime</option><option>Weekends only</option><option>Evenings</option></select></div>

@@ -1,0 +1,680 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --terra:#C1522A;--terra-h:#A8431F;--terra-light:#E8A07A;--terra-pale:#F5E6DC;
+  --sand:#F2EAD8;--sand-dark:#D4C4A0;--sand-deep:#8B7355;
+  --ink:#2C1A0E;--ink-mid:#5A3E28;--ink-light:#8B6B4A;
+  --cream:#FBF7F0;--white:#FFFFFF;
+  --green:#3D6B4F;--green-bg:#E8F0EB;
+  --gold:#8B6914;--gold-bg:#FDF6E3;--gold-border:#D4A843;
+  --r:12px;--rl:20px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden}
+.page{display:none}
+.page.active{display:block;animation:fi .25s ease}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* NAV */
+nav{background:var(--white);border-bottom:1px solid var(--sand-dark);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:50}
+.logo{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--terra);cursor:pointer}
+.logo em{font-style:italic;color:var(--ink-mid)}
+.nav-links{display:flex;gap:4px;align-items:center}
+.nb{background:none;border:none;padding:6px 12px;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--ink-mid);cursor:pointer;border-radius:8px;transition:background .15s,color .15s}
+.nb:hover{background:var(--terra-pale);color:var(--terra)}
+.nb.on{color:var(--terra);font-weight:500}
+.nav-av{width:34px;height:34px;border-radius:50%;background:var(--terra-pale);border:2px solid var(--terra-light);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:500;color:var(--terra);margin-left:4px}
+.badge{background:var(--terra);color:#fff;border-radius:10px;font-size:0.65rem;padding:1px 6px;margin-left:4px;vertical-align:middle}
+
+/* HERO */
+.hero{background:var(--ink);padding:4rem 1.5rem 3rem;text-align:center;position:relative;overflow:hidden}
+.hero-pat{position:absolute;inset:0;opacity:.06;background-image:repeating-conic-gradient(var(--terra-light) 0% 25%,transparent 0% 50%);background-size:22px 22px}
+.hero-tag{display:inline-block;background:var(--terra);color:#fff;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;padding:.35rem .9rem;border-radius:20px;margin-bottom:1.25rem}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);color:#fff;line-height:1.1;margin-bottom:.9rem}
+.hero h1 em{color:var(--terra-light);font-style:italic}
+.hero p{font-size:1rem;color:var(--sand-dark);max-width:480px;margin:0 auto 2rem;line-height:1.7}
+.hbtns{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.btn{background:var(--terra);color:#fff;border:none;padding:.8rem 1.75rem;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;transition:background .2s,transform .15s}
+.btn:hover{background:var(--terra-h);transform:translateY(-1px)}
+.btn.out{background:transparent;border:1.5px solid rgba(255,255,255,.3)}
+.btn.out:hover{border-color:var(--terra-light);color:var(--terra-light)}
+
+/* STATS */
+.sbar{background:var(--terra-pale);border-bottom:1px solid var(--terra-light);padding:.9rem 1.5rem;display:flex;gap:2rem;justify-content:center;flex-wrap:wrap}
+.sbar-item{text-align:center}
+.sbar-n{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--terra)}
+.sbar-l{font-size:.7rem;color:var(--ink-light);text-transform:uppercase;letter-spacing:1px}
+
+/* SEARCH */
+.srch-wrap{padding:1.5rem;max-width:760px;margin:0 auto}
+.srch-box{display:flex;gap:.6rem;background:var(--white);border:1.5px solid var(--sand-dark);border-radius:var(--rl);padding:.65rem;box-shadow:0 2px 10px rgba(44,26,14,.07)}
+.srch-box input{flex:1;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);background:none;padding:.2rem .4rem}
+.srch-box input::placeholder{color:var(--sand-deep)}
+.srch-box select{border:none;outline:none;background:var(--sand);border-radius:8px;padding:.35rem .65rem;font-family:'DM Sans',sans-serif;font-size:.8rem;color:var(--ink-mid);cursor:pointer}
+.srch-go{background:var(--terra);color:#fff;border:none;border-radius:9px;padding:.45rem 1.1rem;font-family:'DM Sans',sans-serif;font-size:.8rem;cursor:pointer}
+
+/* FILTERS */
+.filters{padding:0 1.5rem 1.25rem;display:flex;gap:.4rem;flex-wrap:wrap;max-width:1100px;margin:0 auto}
+.chip{background:var(--white);border:1px solid var(--sand-dark);color:var(--ink-mid);padding:.35rem .9rem;border-radius:20px;font-size:.75rem;cursor:pointer;transition:all .15s}
+.chip:hover,.chip.on{background:var(--terra);border-color:var(--terra);color:#fff}
+
+/* GRID */
+.gwrap{padding:0 1.5rem 3rem;max-width:1100px;margin:0 auto}
+.sec-title{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--ink);margin-bottom:1.25rem}
+.sec-title span{color:var(--terra)}
+.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.1rem}
+.icard{background:var(--white);border:1px solid var(--sand-dark);border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s}
+.icard:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(44,26,14,.11);border-color:var(--terra-light)}
+.icard-img{height:168px;display:flex;align-items:center;justify-content:center;font-size:3.2rem;position:relative}
+.ibadge{position:absolute;top:9px;left:9px;background:var(--terra);color:#fff;font-size:.65rem;padding:.2rem .55rem;border-radius:20px}
+.ibadge.req{background:var(--green)}
+.icard-body{padding:.9rem}
+.icard-title{font-weight:500;color:var(--ink);margin-bottom:.2rem;font-size:.9rem}
+.icard-seek{font-size:.75rem;color:var(--ink-light);margin-bottom:.7rem}
+.icard-seek strong{color:var(--terra)}
+.icard-foot{display:flex;align-items:center;justify-content:space-between}
+.icard-user{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--ink-light)}
+.av{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:500;color:#fff}
+.hbtn{background:none;border:1.5px solid var(--sand-dark);border-radius:7px;width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .2s}
+.hbtn:hover,.hbtn.on{border-color:var(--terra);background:var(--terra-pale)}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(44,26,14,.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem}
+.overlay.hide{display:none}
+.modal{background:var(--white);border-radius:var(--rl);width:100%;max-width:460px}
+.mhdr{padding:1.25rem 1.5rem;border-bottom:1px solid var(--sand-dark);display:flex;align-items:center;justify-content:space-between}
+.mhdr h3{font-family:'Playfair Display',serif;font-size:1.1rem}
+.mclose{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--ink-light);line-height:1}
+.mbody{padding:1.4rem}
+.mprev{display:flex;align-items:center;gap:.9rem;background:var(--sand);border-radius:var(--r);padding:.9rem;margin-bottom:1.25rem}
+.ex-row{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:1.25rem}
+.exopt{border:2px solid var(--sand-dark);border-radius:var(--r);padding:.9rem;cursor:pointer;text-align:center;transition:border-color .15s,background .15s}
+.exopt:hover{border-color:var(--terra)}
+.exopt.on{border-color:var(--terra);background:var(--terra-pale)}
+.exopt-icon{font-size:1.4rem;margin-bottom:.35rem}
+.exopt-lbl{font-size:.85rem;font-weight:500;color:var(--ink)}
+.exopt-sub{font-size:.7rem;color:var(--ink-light);margin-top:.15rem}
+.fg{margin-bottom:1.1rem}
+.fg label{display:block;font-size:.8rem;font-weight:500;color:var(--ink-mid);margin-bottom:.4rem}
+.fg input{width:100%;padding:.65rem .9rem;border:1.5px solid var(--sand-dark);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.875rem;outline:none}
+.fg input:focus{border-color:var(--terra)}
+.cprev{background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:var(--r);padding:.65rem .9rem;font-size:.78rem;color:var(--gold);margin-bottom:1.1rem}
+.msub{width:100%;padding:.85rem;background:var(--terra);color:#fff;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer}
+.msub:hover{background:var(--terra-h)}
+
+/* MESSAGES */
+.inbox-page{display:grid;grid-template-columns:290px 1fr;height:calc(100vh - 60px);max-height:680px}
+.ib-sidebar{border-right:1px solid var(--sand-dark);background:var(--white);display:flex;flex-direction:column;overflow:hidden}
+.ib-top{padding:1rem 1.25rem;border-bottom:1px solid var(--sand-dark);flex-shrink:0}
+.ib-title{font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:.4rem}
+.ib-legend{display:flex;gap:.75rem;font-size:.68rem;color:var(--ink-light)}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:3px;position:relative;top:1px}
+.ib-list{overflow-y:auto;flex:1}
+.tier-div{padding:.35rem 1.1rem;font-size:.67rem;font-weight:500;letter-spacing:1.1px;text-transform:uppercase;display:flex;align-items:center;gap:.4rem;flex-shrink:0}
+.tier-div.t1{background:var(--gold-bg);color:var(--gold);border-bottom:1px solid var(--gold-border)}
+.tier-div.t2{background:var(--sand);color:var(--ink-light);border-bottom:1px solid var(--sand-dark)}
+.thread{padding:.8rem 1.1rem;cursor:pointer;border-bottom:1px solid var(--sand);transition:background .12s}
+.thread:hover,.thread.on{background:var(--terra-pale)}
+.th-top{display:flex;align-items:center;gap:.55rem;margin-bottom:.28rem}
+.th-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:500;color:#fff;flex-shrink:0}
+.th-name{font-weight:500;font-size:.84rem;flex:1;color:var(--ink)}
+.th-credit{font-size:.65rem;background:var(--sand);border-radius:7px;padding:.12rem .4rem;color:var(--ink-light)}
+.th-time{font-size:.68rem;color:var(--ink-light);margin-left:4px}
+.th-prev{font-size:.75rem;color:var(--ink-light);padding-left:40px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.th-item{font-size:.68rem;color:var(--terra);padding-left:40px;margin-top:.15rem}
+.mpill{display:inline-flex;align-items:center;background:var(--gold-bg);color:var(--gold);font-size:.62rem;padding:.12rem .45rem;border-radius:9px;border:1px solid var(--gold-border);margin-left:3px}
+
+/* CHAT */
+.chat-area{display:flex;flex-direction:column;background:var(--cream)}
+.chat-hdr{background:var(--white);border-bottom:1px solid var(--sand-dark);padding:.9rem 1.4rem;display:flex;align-items:center;gap:.9rem;flex-shrink:0}
+.chat-hdr-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:500;color:#fff;flex-shrink:0}
+.chat-hdr-name{font-weight:500;font-size:.9rem;color:var(--ink)}
+.chat-hdr-sub{font-size:.74rem;color:var(--ink-light);margin-top:1px}
+.chat-hdr-right{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.tbadge{font-size:.68rem;padding:.22rem .65rem;border-radius:9px;font-weight:500}
+.tbadge.t1{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-border)}
+.tbadge.t2{background:var(--sand);color:var(--ink-light);border:1px solid var(--sand-dark)}
+.cbadge{font-size:.68rem;color:var(--ink-light)}
+.chat-body{flex:1;overflow-y:auto;padding:1.25rem;display:flex;flex-direction:column;gap:.9rem}
+.bub{max-width:68%;padding:.7rem .95rem;border-radius:15px;font-size:.85rem;line-height:1.5}
+.bub.them{background:var(--white);border:1px solid var(--sand-dark);color:var(--ink);border-radius:15px 15px 15px 4px;align-self:flex-start}
+.bub.me{background:var(--terra);color:#fff;border-radius:15px 15px 4px 15px;align-self:flex-end}
+.bub-time{font-size:.67rem;opacity:.6;margin-top:.3rem}
+.exc-card{background:var(--white);border:1px solid var(--sand-dark);border-radius:var(--r);padding:.9rem;max-width:270px;align-self:flex-start}
+.exc-card-title{font-size:.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--ink-light);margin-bottom:.45rem}
+.exc-items{display:flex;align-items:center;gap:.6rem;margin-bottom:.65rem}
+.exc-item{text-align:center;font-size:.75rem;flex:1}
+.exc-icon{font-size:1.3rem;background:var(--sand);border-radius:7px;padding:.35rem;display:block;margin-bottom:.28rem}
+.exc-arrow{color:var(--terra);font-size:1rem}
+.exc-accept{width:100%;background:var(--green);color:#fff;border:none;border-radius:8px;padding:.42rem;font-family:'DM Sans',sans-serif;font-size:.75rem;cursor:pointer}
+.exc-accept:hover{opacity:.88}
+.chat-inp-wrap{background:var(--white);border-top:1px solid var(--sand-dark);padding:.9rem 1.25rem;display:flex;gap:.6rem;align-items:flex-end;flex-shrink:0}
+.chat-inp-wrap textarea{flex:1;border:1.5px solid var(--sand-dark);border-radius:var(--r);padding:.55rem .8rem;font-family:'DM Sans',sans-serif;font-size:.85rem;resize:none;outline:none;min-height:40px}
+.chat-inp-wrap textarea:focus{border-color:var(--terra)}
+.send-btn{background:var(--terra);color:#fff;border:none;border-radius:9px;width:38px;height:38px;cursor:pointer;font-size:.95rem;flex-shrink:0}
+.send-btn:hover{background:var(--terra-h)}
+
+/* FORMS */
+.fpage{max-width:600px;margin:0 auto;padding:2.25rem 1.5rem}
+.fhdr{margin-bottom:1.75rem}
+.fhdr h2{font-family:'Playfair Display',serif;font-size:1.85rem;color:var(--ink)}
+.fhdr p{color:var(--ink-light);margin-top:.4rem;font-size:.9rem}
+.fg2{margin-bottom:1.35rem}
+.fg2 label{display:block;font-size:.82rem;font-weight:500;color:var(--ink-mid);margin-bottom:.45rem}
+.fg2 input,.fg2 textarea,.fg2 select{width:100%;padding:.7rem .95rem;border:1.5px solid var(--sand-dark);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--ink);background:var(--white);outline:none;transition:border-color .2s}
+.fg2 input:focus,.fg2 textarea:focus,.fg2 select:focus{border-color:var(--terra)}
+.fg2 textarea{resize:vertical;min-height:90px}
+.upbox{border:2px dashed var(--sand-dark);border-radius:var(--r);padding:2.25rem;text-align:center;cursor:pointer;background:var(--sand);transition:border-color .2s}
+.upbox:hover{border-color:var(--terra);background:var(--terra-pale)}
+.cg{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem}
+.co{border:1.5px solid var(--sand-dark);border-radius:var(--r);padding:.7rem;text-align:center;cursor:pointer;transition:all .15s;font-size:.76rem;color:var(--ink-mid)}
+.co:hover,.co.on{border-color:var(--terra);background:var(--terra-pale);color:var(--terra)}
+.co-icon{font-size:1.35rem;display:block;margin-bottom:.3rem}
+.tcol{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+.fsub{width:100%;padding:.9rem;background:var(--terra);color:#fff;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:500;cursor:pointer;transition:background .2s}
+.fsub:hover{background:var(--terra-h)}
+
+/* PROFILE */
+.ppage{max-width:860px;margin:0 auto;padding:2.25rem 1.5rem}
+.pbanner{background:linear-gradient(135deg,var(--ink) 0%,#4A2E1A 100%);border-radius:var(--rl);padding:2.25rem;margin-bottom:-36px;position:relative;overflow:hidden}
+.pbanner-pat{position:absolute;inset:0;opacity:.08;background-image:repeating-conic-gradient(var(--terra-light) 0% 25%,transparent 0% 50%);background-size:18px 18px}
+.pav-wrap{position:relative;z-index:1;display:flex;align-items:flex-end;gap:1.25rem}
+.pav{width:72px;height:72px;border-radius:50%;background:var(--terra);border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.6rem;color:#fff}
+.pname{font-family:'Playfair Display',serif;font-size:1.4rem;color:#fff;margin-bottom:.2rem}
+.pmeta{font-size:.76rem;color:var(--sand-dark)}
+.pcontent{background:var(--white);border:1px solid var(--sand-dark);border-radius:var(--rl);padding:2.75rem 1.75rem 1.75rem;display:grid;grid-template-columns:200px 1fr;gap:1.75rem}
+.pleft{border-right:1px solid var(--sand-dark);padding-right:1.75rem}
+.pstat{text-align:center;padding:.85rem;background:var(--sand);border-radius:var(--r);margin-bottom:.75rem}
+.pstat-n{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--terra)}
+.pstat-l{font-size:.7rem;color:var(--ink-light);margin-top:.2rem}
+.ptag-wrap{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.7rem}
+.ptag{background:var(--green-bg);color:var(--green);font-size:.74rem;padding:.3rem .7rem;border-radius:18px;border:1px solid #b0d4bc}
+.ptag.seek{background:#FFF0E8;color:#A8431F;border-color:#F5C4A0}
+.pright h3{font-family:'Playfair Display',serif;font-size:1.15rem;margin-bottom:1rem}
+.mlist{display:flex;align-items:center;gap:.9rem;padding:.7rem;border-radius:var(--r);border:1px solid var(--sand-dark);margin-bottom:.65rem}
+.mlist-icon{width:40px;height:40px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:var(--sand);flex-shrink:0}
+.mlist-info{flex:1}
+.mlist-t{font-size:.86rem;font-weight:500;color:var(--ink)}
+.mlist-m{font-size:.74rem;color:var(--ink-light)}
+.bactive{background:var(--green-bg);color:var(--green);font-size:.67rem;padding:.18rem .55rem;border-radius:9px;white-space:nowrap}
+.clog{margin-top:1.25rem}
+.clog h3{font-family:'Playfair Display',serif;font-size:1.15rem;margin-bottom:.85rem}
+.centry{display:flex;align-items:center;gap:.7rem;padding:.5rem 0;border-bottom:1px solid var(--sand)}
+.cdelta{font-weight:500;font-size:.9rem;min-width:32px;text-align:right;flex-shrink:0}
+.cdelta.pos{color:var(--green)}
+.cdelta.neg{color:var(--terra)}
+.cdesc{font-size:.78rem;color:var(--ink-mid);flex:1}
+.cdate{font-size:.68rem;color:var(--ink-light);white-space:nowrap}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--ink);color:#fff;padding:.9rem 1.35rem;border-radius:var(--r);font-size:.83rem;z-index:999;transform:translateY(80px);opacity:0;transition:all .28s;border-left:4px solid var(--terra);max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+</style>
+
+<div class="toast" id="toast"></div>
+
+<!-- OFFER MODAL -->
+<div class="overlay hide" id="overlay">
+  <div class="modal">
+    <div class="mhdr">
+      <h3>Make an offer</h3>
+      <button class="mclose" onclick="closeModal()">×</button>
+    </div>
+    <div class="mbody">
+      <div class="mprev" id="mprev"></div>
+      <div class="ex-row">
+        <div class="exopt on" id="eo-trade" onclick="setEx('trade')">
+          <div class="exopt-icon">⇄</div>
+          <div class="exopt-lbl">Trade</div>
+          <div class="exopt-sub">You offer something back · +1 credit each</div>
+        </div>
+        <div class="exopt" id="eo-gift" onclick="setEx('gift')">
+          <div class="exopt-icon">🎁</div>
+          <div class="exopt-lbl">Gift</div>
+          <div class="exopt-sub">You give freely · +2 credit to you</div>
+        </div>
+      </div>
+      <div class="fg" id="offer-fg">
+        <label>What will you offer in return?</label>
+        <input type="text" id="offer-inp" placeholder="e.g. Homemade jam, guitar lesson...">
+      </div>
+      <div class="cprev" id="cprev"></div>
+      <button class="msub" onclick="submitModal()">Send offer</button>
+    </div>
+  </div>
+</div>
+
+<nav>
+  <div class="logo" onclick="go('home')">Medina<em>.</em></div>
+  <div class="nav-links">
+    <button class="nb on" id="nb-home" onclick="go('home')">Browse</button>
+    <button class="nb" id="nb-post" onclick="go('post')">Post Item</button>
+    <button class="nb" id="nb-messages" onclick="go('messages')">Messages<span class="badge" id="inbox-badge">4</span></button>
+    <div class="nav-av" onclick="go('profile')" title="Your profile">SR</div>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-pat"></div>
+    <div style="position:relative;z-index:1">
+      <div class="hero-tag">Community Exchange</div>
+      <h1>Trade what you have<br>for <em>what you need</em></h1>
+      <p>A marketplace built on reciprocity. Offer something, receive something. No money needed — just community.</p>
+      <div class="hbtns">
+        <button class="btn" onclick="go('post')">Post an Item</button>
+        <button class="btn out" onclick="go('messages')">View Inbox</button>
+      </div>
+    </div>
+  </div>
+  <div class="sbar">
+    <div class="sbar-item"><div class="sbar-n">1,247</div><div class="sbar-l">Active Listings</div></div>
+    <div class="sbar-item"><div class="sbar-n">482</div><div class="sbar-l">Exchanges Made</div></div>
+    <div class="sbar-item"><div class="sbar-n">839</div><div class="sbar-l">Members</div></div>
+    <div class="sbar-item"><div class="sbar-n">94%</div><div class="sbar-l">Satisfaction</div></div>
+  </div>
+  <div class="srch-wrap">
+    <div class="srch-box">
+      <input type="text" placeholder="Search items, skills, requests..." id="srch-inp">
+      <select>
+        <option>All categories</option>
+        <option>Books & Media</option>
+        <option>Kitchen & Food</option>
+        <option>Tools & DIY</option>
+        <option>Garden</option>
+        <option>Clothing</option>
+        <option>Skills</option>
+      </select>
+      <button class="srch-go">Search</button>
+    </div>
+  </div>
+  <div class="filters">
+    <button class="chip on" onclick="setChip(this)">All Items</button>
+    <button class="chip" onclick="setChip(this)">Exchange</button>
+    <button class="chip" onclick="setChip(this)">Requests</button>
+    <button class="chip" onclick="setChip(this)">Skills</button>
+    <button class="chip" onclick="setChip(this)">Near Me</button>
+  </div>
+  <div class="gwrap">
+    <p class="sec-title">Recently listed <span>near you</span></p>
+    <div class="igrid" id="igrid"></div>
+  </div>
+</div>
+
+<!-- POST PAGE -->
+<div class="page" id="page-post">
+  <div class="fpage">
+    <div class="fhdr"><h2>List an Item</h2><p>Share something you have — let the community trade with you.</p></div>
+    <div class="fg2"><label>Item name</label><input type="text" placeholder="e.g. Vintage camera, sourdough starter, yoga mat..."></div>
+    <div class="fg2"><label>Description</label><textarea placeholder="Condition, age, any quirks worth mentioning..."></textarea></div>
+    <div class="fg2"><label>Photos</label>
+      <div class="upbox"><div style="font-size:1.75rem;margin-bottom:.6rem">📷</div><p style="font-size:.85rem;color:var(--ink-light)">Drag photos here or click to upload</p><p style="font-size:.72rem;margin-top:.3rem;color:var(--sand-deep)">Up to 6 · JPG, PNG</p></div>
+    </div>
+    <div class="fg2"><label>Category</label>
+      <div class="cg">
+        <div class="co on" onclick="setCat(this)"><span class="co-icon">📚</span>Books & Media</div>
+        <div class="co" onclick="setCat(this)"><span class="co-icon">🛠️</span>Tools & DIY</div>
+        <div class="co" onclick="setCat(this)"><span class="co-icon">🌿</span>Garden</div>
+        <div class="co" onclick="setCat(this)"><span class="co-icon">👗</span>Clothing</div>
+        <div class="co" onclick="setCat(this)"><span class="co-icon">🍳</span>Kitchen</div>
+        <div class="co" onclick="setCat(this)"><span class="co-icon">✨</span>Skills</div>
+      </div>
+    </div>
+    <div class="fg2"><label>What are you looking for in exchange?</label><input type="text" placeholder="e.g. Homemade food, children's books, gardening help..."></div>
+    <div class="fg2 tcol">
+      <div><label>Your area</label><input type="text" placeholder="Brixton, London"></div>
+      <div><label>Availability</label><select><option>Anytime</option><option>Weekends only</option><option>Evenings</option></select></div>
+    </div>
+    <button class="fsub" onclick="postItem()">List Item</button>
+  </div>
+</div>
+
+<!-- MESSAGES PAGE -->
+<div class="page" id="page-messages">
+  <div class="inbox-page">
+    <div class="ib-sidebar">
+      <div class="ib-top">
+        <div class="ib-title">Inbox</div>
+        <div class="ib-legend">
+          <span><span class="dot" style="background:var(--gold)"></span>Mutual match</span>
+          <span><span class="dot" style="background:var(--sand-dark)"></span>Other</span>
+          <span style="margin-left:auto">sorted by credit ↓</span>
+        </div>
+      </div>
+      <div class="ib-list" id="thread-list"></div>
+    </div>
+    <div class="chat-area">
+      <div class="chat-hdr" id="chat-hdr"></div>
+      <div class="chat-body" id="chat-body"></div>
+      <div class="chat-inp-wrap">
+        <textarea id="chat-inp" placeholder="Write a message..." rows="1"></textarea>
+        <button class="send-btn" onclick="sendMsg()">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE PAGE -->
+<div class="page" id="page-profile">
+  <div class="ppage">
+    <div class="pbanner">
+      <div class="pbanner-pat"></div>
+      <div class="pav-wrap">
+        <div class="pav">SR</div>
+        <div>
+          <div class="pname">Sara Rahman</div>
+          <div class="pmeta">Member since March 2024 · Brixton, London</div>
+        </div>
+      </div>
+    </div>
+    <div class="pcontent">
+      <div class="pleft">
+        <div class="pstat"><div class="pstat-n" id="p-score">—</div><div class="pstat-l">Credit score</div></div>
+        <div class="pstat"><div class="pstat-n">14</div><div class="pstat-l">Exchanges</div></div>
+        <div class="pstat"><div class="pstat-n">7</div><div class="pstat-l">Active listings</div></div>
+        <div style="margin-top:.75rem">
+          <div style="font-size:.7rem;color:var(--ink-light);text-transform:uppercase;letter-spacing:1px;margin-bottom:.45rem">Offers</div>
+          <div class="ptag-wrap"><span class="ptag">🍞 Bread</span><span class="ptag">🌱 Seedlings</span><span class="ptag">📖 Books</span></div>
+          <div style="font-size:.7rem;color:var(--ink-light);text-transform:uppercase;letter-spacing:1px;margin-bottom:.45rem;margin-top:.5rem">Seeking</div>
+          <div class="ptag-wrap"><span class="ptag seek">🛠️ Tools</span><span class="ptag seek">🎵 Music gear</span></div>
+        </div>
+        <button class="fsub" style="margin-top:.85rem;font-size:.82rem;padding:.7rem" onclick="go('post')">+ Post new item</button>
+      </div>
+      <div class="pright">
+        <h3>Active Listings</h3>
+        <div class="mlist"><div class="mlist-icon">🌿</div><div class="mlist-info"><div class="mlist-t">Tomato seedlings (6 pack)</div><div class="mlist-m">Seeking: kitchen staples or herbs</div></div><span class="bactive">Active</span></div>
+        <div class="mlist"><div class="mlist-icon">📚</div><div class="mlist-info"><div class="mlist-t">Stack of design books (5)</div><div class="mlist-m">Seeking: fiction, board games</div></div><span class="bactive">Active</span></div>
+        <div class="mlist"><div class="mlist-icon">🍞</div><div class="mlist-info"><div class="mlist-t">Weekly sourdough loaf</div><div class="mlist-m">Seeking: vegetables, eggs</div></div><span class="bactive">Active</span></div>
+        <div class="clog">
+          <h3>Credit History</h3>
+          <div id="clog-entries"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────────────────────────
+const ME = {
+  offers: ['books','seedlings','bread','sourdough','plants'],
+  seeks:  ['tools','music','guitar','cycling','drill']
+};
+
+let creditLog = [
+  {delta:+2, desc:'Gift given → Omar (sourdough starter)', date:'2 days ago'},
+  {delta:+1, desc:'Trade completed → Lucia (books ↔ art prints)', date:'1 week ago'},
+  {delta:-1, desc:'Gift received → Fatima (jam, no offer made)', date:'2 weeks ago'},
+  {delta:+1, desc:'Trade completed → James (seeds ↔ camera strap)', date:'3 weeks ago'},
+];
+
+const senders = [
+  {id:'aisha', name:'Aisha M.',  init:'AM', col:'#C1522A', credit:12,
+   offers:['lamp','rattan','home decor'], seeks:['candles','plants','seedlings'],
+   item:'Rattan lamp ↔ Candles',
+   preview:"Yes! I'd love to trade the lamp for some candles.",  ago:'2m ago',
+   msgs:[
+     {me:false, txt:"Hi! I saw your listing for handmade candles — I have a gorgeous rattan floor lamp I'd love to trade!",t:"2:14 PM"},
+     {me:true,  txt:"That sounds perfect! I've been looking for a lamp for my reading corner.",t:"2:18 PM"},
+     {me:false, txt:"Amazing! The lamp is barely used. I can send photos.",t:"2:20 PM"},
+     {me:false, card:{a:'🪔 Rattan lamp',b:'🕯️ Candle set'}}
+   ]},
+  {id:'omar',  name:'Omar B.',   init:'OB', col:'#3D6B4F', credit:9,
+   offers:['bike','tools','pump','drill'], seeks:['sourdough','bread','food','baking'],
+   item:'Bike pump ↔ Sourdough starter',
+   preview:"The bike pump is still available!",               ago:'1h ago',
+   msgs:[
+     {me:false, txt:"The bike pump is still available! It's a floor pump with a pressure gauge.",t:"10:30 AM"},
+     {me:true,  txt:"Brilliant. My sourdough is 3 years old, very active. Would 200g work?",t:"10:45 AM"},
+     {me:false, txt:"That sounds wonderful, I've always wanted to try sourdough!",t:"10:50 AM"},
+   ]},
+  {id:'lucia', name:'Lucia P.',  init:'LP', col:'#7F77DD', credit:7,
+   offers:['watercolour','art','painting'], seeks:['guitar','music','lessons','books'],
+   item:'Guitar lessons ↔ Watercolour set',
+   preview:"The guitar lessons sound amazing!",               ago:'Yesterday',
+   msgs:[
+     {me:false, txt:"The guitar lessons sound amazing! How many sessions were you thinking?",t:"Yesterday"},
+     {me:true,  txt:"4 × 1hr sessions in exchange for the full watercolour set.",t:"Yesterday"},
+   ]},
+  {id:'kofi',  name:'Kofi A.',   init:'KA', col:'#185FA5', credit:5,
+   offers:['drill','toolset','tools'], seeks:['baking','jam','bread','food'],
+   item:'Tool kit ↔ Baked goods',
+   preview:"I have a full drill set, interested in bread!",   ago:'3h ago',
+   msgs:[
+     {me:false, txt:"Hi Sara, I have a full tool kit with a drill — would you trade for some baked goods?",t:"9:00 AM"},
+   ]},
+  {id:'priya', name:'Priya S.',  init:'PS', col:'#993556', credit:3,
+   offers:['guitar','ukulele','music'], seeks:['plants','seedlings','garden'],
+   item:'Guitar ↔ Garden seedlings',
+   preview:"I have a guitar — interested in seedlings?",      ago:'5h ago',
+   msgs:[
+     {me:false, txt:"Hello! I have an acoustic guitar. Would you trade for some seedlings?",t:"7:15 AM"},
+   ]},
+];
+
+const ITEMS = [
+  {emoji:'🪴',bg:'#E8F0EB',title:'Monstera Deliciosa (large)',seek:'Cookbooks or spice sets',user:'Fatima K.',uc:'#C1522A',req:false},
+  {emoji:'📷',bg:'#F5E6DC',title:'Vintage Pentax camera',seek:'Cycling gear or tools',user:'James O.',uc:'#3D6B4F',req:false},
+  {emoji:'🎸',bg:'#F2EAD8',title:'Acoustic guitar + case',seek:'Language lessons or art supplies',user:'Priya S.',uc:'#7F77DD',req:false},
+  {emoji:'🍞',bg:'#FAF0E6',title:'Weekly sourdough loaf',seek:'Fresh vegetables or eggs',user:'Sara R.',uc:'#C1522A',req:false},
+  {emoji:'🛠️',bg:'#EAF3DE',title:'Full tool kit (drill, set)',seek:'Baking goods or jams',user:'Kofi A.',uc:'#3D6B4F',req:true},
+  {emoji:'📚',bg:'#E6EEF8',title:"Children's books (20+)",seek:'Garden plants or seeds',user:'Mei L.',uc:'#185FA5',req:false},
+  {emoji:'🧵',bg:'#FBF0F4',title:'Singer sewing machine',seek:'Bicycle or fitness gear',user:'Nour H.',uc:'#993556',req:false},
+  {emoji:'🎨',bg:'#FAEEDA',title:'Watercolour art set',seek:'Guitar or music lessons',user:'Lucia P.',uc:'#7F77DD',req:true},
+];
+
+let curSender = senders[0];
+let modalType = 'trade';
+let modalItem = null;
+
+// ─── PRIORITY QUEUE ───────────────────────────────────────────────────────────
+function isMutual(s) {
+  const theyWantMine = s.seeks.some(sk => ME.offers.some(o => o===sk || sk.includes(o) || o.includes(sk)));
+  const iWantTheirs  = ME.seeks.some(sk => s.offers.some(o => o===sk || sk.includes(o) || o.includes(sk)));
+  return theyWantMine && iWantTheirs;
+}
+function sortedSenders() {
+  const t1 = senders.filter(s =>  isMutual(s)).sort((a,b)=>b.credit-a.credit);
+  const t2 = senders.filter(s => !isMutual(s)).sort((a,b)=>b.credit-a.credit);
+  return {t1,t2};
+}
+
+// ─── INBOX RENDER ─────────────────────────────────────────────────────────────
+function renderInbox() {
+  const {t1,t2} = sortedSenders();
+  const list = document.getElementById('thread-list');
+  let html = '';
+  if(t1.length){
+    html += `<div class="tier-div t1">★ Mutual match — sorted by credit</div>`;
+    t1.forEach(s => html += threadHTML(s));
+  }
+  if(t2.length){
+    html += `<div class="tier-div t2">Other messages — sorted by credit</div>`;
+    t2.forEach(s => html += threadHTML(s));
+  }
+  list.innerHTML = html;
+  list.querySelectorAll('.thread').forEach(el => {
+    el.addEventListener('click', () => {
+      list.querySelectorAll('.thread').forEach(t=>t.classList.remove('on'));
+      el.classList.add('on');
+      curSender = senders.find(s=>s.id===el.dataset.id);
+      renderChat();
+    });
+  });
+  // select first thread
+  const first = list.querySelector('.thread');
+  if(first){ first.classList.add('on'); curSender = senders.find(s=>s.id===first.dataset.id); }
+  renderChat();
+}
+
+function threadHTML(s) {
+  const mutual = isMutual(s);
+  const pill = mutual ? `<span class="mpill">⇄</span>` : '';
+  return `<div class="thread" data-id="${s.id}">
+    <div class="th-top">
+      <div class="th-av" style="background:${s.col}">${s.init}</div>
+      <span class="th-name">${s.name}${pill}</span>
+      <span class="th-credit">↑${s.credit}</span>
+      <span class="th-time">${s.ago}</span>
+    </div>
+    <div class="th-prev">${s.preview}</div>
+    <div class="th-item">${s.item}</div>
+  </div>`;
+}
+
+// ─── CHAT RENDER ──────────────────────────────────────────────────────────────
+function renderChat() {
+  const s = curSender;
+  const mutual = isMutual(s);
+  document.getElementById('chat-hdr').innerHTML = `
+    <div class="chat-hdr-av" style="background:${s.col}">${s.init}</div>
+    <div>
+      <div class="chat-hdr-name">${s.name}</div>
+      <div class="chat-hdr-sub">${s.item}</div>
+    </div>
+    <div class="chat-hdr-right">
+      <div class="tbadge ${mutual?'t1':'t2'}">${mutual?'★ Mutual match':'No match'}</div>
+      <div class="cbadge">Credit: ${s.credit}</div>
+    </div>`;
+
+  const body = document.getElementById('chat-body');
+  body.innerHTML = s.msgs.map(m => {
+    if(m.card) {
+      const [ai,an] = m.card.a.split(' ');
+      const [bi,bn] = m.card.b.split(' ');
+      return `<div class="exc-card">
+        <div class="exc-card-title">Proposed Exchange</div>
+        <div class="exc-items">
+          <div class="exc-item"><span class="exc-icon">${ai}</span>${an}</div>
+          <div class="exc-arrow">⇄</div>
+          <div class="exc-item"><span class="exc-icon">${bi}</span>${bn}</div>
+        </div>
+        <button class="exc-accept" onclick="acceptTrade('${s.id}')">Accept trade — +1 credit each</button>
+      </div>`;
+    }
+    return `<div style="display:flex;flex-direction:column;align-items:${m.me?'flex-end':'flex-start'}">
+      <div class="bub ${m.me?'me':'them'}">${m.txt}<div class="bub-time">${m.t}</div></div>
+    </div>`;
+  }).join('');
+  body.scrollTop = body.scrollHeight;
+}
+
+// ─── CREDIT ACTIONS ───────────────────────────────────────────────────────────
+function myCredit() { return creditLog.reduce((s,e)=>s+e.delta,0); }
+
+function acceptTrade(sid) {
+  const s = senders.find(x=>x.id===sid);
+  s.credit += 1;
+  creditLog.unshift({delta:+1, desc:`Trade completed → ${s.name}`, date:'Just now'});
+  // remove card from msgs
+  s.msgs = s.msgs.filter(m=>!m.card);
+  s.msgs.push({me:true, txt:'Trade accepted! Looking forward to the exchange.', t:'Just now'});
+  toast(`Trade confirmed! You and ${s.name} each earned +1 credit.`);
+  renderInbox();
+  updateProfile();
+}
+
+function updateProfile() {
+  const sc = document.getElementById('p-score');
+  if(sc) sc.textContent = myCredit();
+  const el = document.getElementById('clog-entries');
+  if(el) el.innerHTML = creditLog.map(e=>`
+    <div class="centry">
+      <span class="cdelta ${e.delta>0?'pos':'neg'}">${e.delta>0?'+':''}${e.delta}</span>
+      <span class="cdesc">${e.desc}</span>
+      <span class="cdate">${e.date}</span>
+    </div>`).join('');
+}
+
+// ─── BROWSE MODAL ─────────────────────────────────────────────────────────────
+function openModal(i) {
+  modalItem = i;
+  modalType = 'trade';
+  const it = ITEMS[i];
+  document.getElementById('mprev').innerHTML = `
+    <span style="font-size:2.4rem">${it.emoji}</span>
+    <div><div style="font-weight:500;font-size:.92rem">${it.title}</div>
+    <div style="font-size:.76rem;color:var(--ink-light);margin-top:.2rem">Listed by ${it.user}</div></div>`;
+  document.getElementById('eo-trade').classList.add('on');
+  document.getElementById('eo-gift').classList.remove('on');
+  document.getElementById('offer-fg').style.display='block';
+  document.getElementById('offer-inp').value='';
+  setCprev();
+  document.getElementById('overlay').classList.remove('hide');
+}
+function closeModal(){ document.getElementById('overlay').classList.add('hide'); }
+function setEx(t){
+  modalType=t;
+  document.getElementById('eo-trade').classList.toggle('on',t==='trade');
+  document.getElementById('eo-gift').classList.toggle('on',t==='gift');
+  document.getElementById('offer-fg').style.display=t==='trade'?'block':'none';
+  setCprev();
+}
+function setCprev(){
+  document.getElementById('cprev').innerHTML = modalType==='trade'
+    ? 'Both you and the other user earn <strong>+1 credit</strong> each when the trade is confirmed.'
+    : 'You earn <strong>+2 credit</strong> for gifting. The recipient earns −1 credit for receiving without offering.';
+}
+function submitModal(){
+  closeModal();
+  if(modalType==='trade'){
+    creditLog.unshift({delta:+1, desc:`Trade offer sent → ${ITEMS[modalItem].user}`, date:'Just now'});
+    toast('Trade offer sent! You\'ll both earn +1 credit on confirmation.');
+  } else {
+    creditLog.unshift({delta:+2, desc:`Gift sent → ${ITEMS[modalItem].user}`, date:'Just now'});
+    toast('Gift sent! +2 credit added to your account.');
+  }
+  updateProfile();
+}
+
+// ─── NAV ─────────────────────────────────────────────────────────────────────
+function go(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  const nb=document.getElementById('nb-'+page);
+  if(nb) nb.classList.add('on');
+  if(page==='messages') renderInbox();
+  if(page==='profile')  updateProfile();
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function renderGrid(){
+  document.getElementById('igrid').innerHTML=ITEMS.map((it,i)=>`
+    <div class="icard" onclick="openModal(${i})">
+      <div class="icard-img" style="background:${it.bg}">
+        <span>${it.emoji}</span>
+        <div class="ibadge${it.req?' req':''}">${it.req?'Request':'Exchange'}</div>
+      </div>
+      <div class="icard-body">
+        <div class="icard-title">${it.title}</div>
+        <div class="icard-seek">Seeking: <strong>${it.seek}</strong></div>
+        <div class="icard-foot">
+          <div class="icard-user"><div class="av" style="background:${it.uc}">${it.user.split(' ').map(n=>n[0]).join('')}</div>${it.user}</div>
+          <button class="hbtn" onclick="event.stopPropagation();this.classList.toggle('on');this.textContent=this.classList.contains('on')?'♥':'♡'">♡</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function sendMsg(){
+  const inp=document.getElementById('chat-inp');
+  const txt=inp.value.trim();
+  if(!txt)return;
+  curSender.msgs.push({me:true,txt,t:'Just now'});
+  inp.value='';
+  renderChat();
+}
+
+function setChip(el){ document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
+function setCat(el){ el.closest('.cg').querySelectorAll('.co').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
+function postItem(){ toast('Item listed! Your exchange is live ✓'); setTimeout(()=>go('home'),1200); }
+
+let _tt;
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),3200); }
+
+renderGrid();
+updateProfile();
+</script>
